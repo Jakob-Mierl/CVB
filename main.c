@@ -10,6 +10,8 @@
  *   - N --> first line to be printed
 */
 
+// Test, how do branches and merges work?
+
 /**
  * Import documentation:
  *   <stdio.h>      --> Used for printing to stdout and stderr
