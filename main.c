@@ -10,7 +10,8 @@
  *   - N --> first line to be printed
 */
 
-// Test, how do branches and merges work?
+// Test, how do branches and merges work? via cli
+// Test, via CLion
 
 /**
  * Import documentation:
