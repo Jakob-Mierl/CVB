@@ -26,6 +26,13 @@
 /* Flag set by ‘--verbose’. */
 static int verbose_flag;
 
+// --help for informations
+void printHelpInfo();
+
+// --version
+void printVersion();
+
+
 int main(int argc, char **argv) {
     int c;
 
@@ -112,4 +119,22 @@ int main(int argc, char **argv) {
     }
 
     exit(0);
+}
+
+void printHelpInfo()
+{
+    printf("Help information");
+    printf("\n-s n\t\tAngabe der ersten auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird ab erster Zeile gelesen");
+    printf("\n\n-e n\t\tAngabe der letzte auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird bis zur letzten Zeile gelesen");
+    printf("\n\n-n[format]\tAusgabe mit fuehrenden Zeilennummern\n\t\tuint\tBreite des Zeilennummernfelds\n\t\tR\trechtsbuendig\n\t\t0\trechtsbuendig mit fuehrenden Nullen\n\t\tL\tlinksbuendig\n\t\tN\tZeilennummer beginnt mit Null");
+    printf("\n\n-v\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus");
+    printf("\n\n-q\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus, ohne den\n\t\tInhalt der Datei auszugeben");
+    printf("\n\n--version\tVersionsinformation des Programms wird ausgegeben\n");
+}
+
+
+
+void printVersion()
+{
+    printf("\ncvb Version 1.0");
 }
