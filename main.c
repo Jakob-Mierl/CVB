@@ -10,9 +10,6 @@
  *   - N --> first line to be printed
 */
 
-// Test, how do branches and merges work? via cli
-// Test, via CLion
-
 /**
  * Import documentation:
  *   <stdio.h>      --> Used for printing to stdout and stderr
@@ -131,8 +128,6 @@ void printHelpInfo()
     printf("\n\n-q\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus, ohne den\n\t\tInhalt der Datei auszugeben");
     printf("\n\n--version\tVersionsinformation des Programms wird ausgegeben\n");
 }
-
-
 
 void printVersion()
 {
