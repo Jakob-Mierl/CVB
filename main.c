@@ -5,7 +5,7 @@
  * Description:
  *   This program should implement the following bash command, via the c programming language.
  *   The command prints the lines between M>N from a certain .txt file, in this example it's fhs51232_a70charts.txt.
- *   head -n M fhs51232_a70charts.txt | tail +N
+ *   head -n M a70charts.txt | tail +N
  *   - M --> Last line to be printed
  *   - N --> first line to be printed
 */
@@ -20,116 +20,105 @@
 #include <stdlib.h>
 #include <getopt.h>
 
-/* Flag set by ‘--verbose’. */
-static int verbose_flag;
-
 // --help for informations
 void printHelpInfo();
 
 // --version
 void printVersion();
 
+int getFileLineCount(FILE *fp);
 
-int main(int argc, char **argv) {
-    int c;
 
-    while (1) {
-        static struct option long_options[] = {
-                /* These options set a flag. */
-                {"verbose", no_argument,       &verbose_flag, 1},
-                {"brief",   no_argument,       &verbose_flag, 0},
-                /* These options don’t set a flag.
-                   We distinguish them by their indices. */
-                {"add",     no_argument,       0,             'a'},
-                {"append",  no_argument,       0,             'b'},
-                {"delete",  required_argument, 0,             'd'},
-                {"create",  required_argument, 0,             'c'},
-                {"file",    required_argument, 0,             'f'},
-                {0, 0,                         0,             0}
-        };
-        /* getopt_long stores the option index here. */
-        int option_index = 0;
+int main(int argc, char **argv) 
+{
+    FILE *fp;
+    int startLine = 1, endLine = EOF, current_line = 1;
+    int opt;
+    char line[256];
 
-        c = getopt_long(argc, argv, "abc:d:f:", long_options, &option_index);
+    static struct option long_options[] = {
+        {"help", no_argument, 0, 'h'},
+        {"version", no_argument, 0, 'v'},
+        {0, 0, 0, 0}
+    };
 
-        /* Detect the end of the options. */
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
-            case 0:
-                /* If this option set a flag, do nothing else now. */
-                if (long_options[option_index].flag != 0) {
-                    break;
-                }
-                printf("option %s", long_options[option_index].name);
-                if (optarg) {
-                    printf(" with arg %s", optarg);
-                }
-                printf("\n");
+    while ((opt = getopt_long(argc, argv, "s:e:", long_options, NULL)) != -1) {
+        switch (opt) {
+            case 's':
+                startLine = atoi(optarg);
                 break;
-
-            case 'a':
-                puts("option -a\n");
+            case 'e':
+                endLine = atoi(optarg);
                 break;
-
-            case 'b':
-                puts("option -b\n");
-                break;
-
-            case 'c':
-                printf("option -c with value `%s'\n", optarg);
-                break;
-
-            case 'd':
-                printf("option -d with value `%s'\n", optarg);
-                break;
-
-            case 'f':
-                printf("option -f with value `%s'\n", optarg);
-                break;
-
-            case '?':
-                /* getopt_long already printed an error message. */
-                break;
-
+            case 'h':
+                printHelpInfo();
+                return(0);
+            case 'v':
+                printVersion();
+                return(0);
             default:
-                abort();
+                fprintf(stderr, "Unknown option!\n");
+                exit(EXIT_FAILURE);
         }
     }
 
-    /* Instead of reporting ‘--verbose’
-       and ‘--brief’ as they are encountered,
-       we report the final status resulting from them. */
-    if (verbose_flag) {
-        puts("verbose flag is set");
+    fp = fopen(argv[argc - 1], "r");
+
+    if(fp == NULL)
+    {
+        fprintf(stderr, "No filename specified! Reading from command line\n");
+        exit(EXIT_FAILURE);
     }
 
-    /* Print any remaining command line arguments (not options). */
-    if (optind < argc) {
-        printf("non-option ARGV-elements: ");
-        while (optind < argc) {
-            printf("%s ", argv[optind++]);
+    if(endLine == EOF)
+    {
+        endLine = getFileLineCount(fp);
+    }
+
+    while (fgets(line, sizeof(line), fp) != NULL) 
+    {
+        if (current_line >= startLine && current_line <= endLine) 
+        {
+            fprintf(stdout, "%s", line);
         }
-        putchar('\n');
+        
+        current_line++;
+        if (current_line > endLine)
+            break;
     }
 
-    exit(0);
+    fclose(fp);
+    return 0;
+}
+
+int getFileLineCount(FILE *fp)
+{
+    char ch;
+    int lines = 1;
+    while(!feof(fp))
+    {
+        ch = fgetc(fp);
+        if(ch == '\n')
+        {
+            lines++;
+        }
+    }
+    rewind(fp);
+    return lines;
 }
 
 void printHelpInfo()
 {
-    printf("Help information");
-    printf("\n-s n\t\tAngabe der ersten auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird ab erster Zeile gelesen");
-    printf("\n\n-e n\t\tAngabe der letzte auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird bis zur letzten Zeile gelesen");
-    printf("\n\n-n[format]\tAusgabe mit fuehrenden Zeilennummern\n\t\tuint\tBreite des Zeilennummernfelds\n\t\tR\trechtsbuendig\n\t\t0\trechtsbuendig mit fuehrenden Nullen\n\t\tL\tlinksbuendig\n\t\tN\tZeilennummer beginnt mit Null");
-    printf("\n\n-v\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus");
-    printf("\n\n-q\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus, ohne den\n\t\tInhalt der Datei auszugeben");
-    printf("\n\n--version\tVersionsinformation des Programms wird ausgegeben\n");
+    fprintf(stdout, "Help information");
+    fprintf(stdout, "\n-s n\t\tAngabe der ersten auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird ab erster Zeile gelesen");
+    fprintf(stdout, "\n\n-e n\t\tAngabe der letzte auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird bis zur letzten Zeile gelesen");
+    fprintf(stdout, "\n\n-n[format]\tAusgabe mit fuehrenden Zeilennummern\n\t\tuint\tBreite des Zeilennummernfelds\n\t\tR\trechtsbuendig\n\t\t0\trechtsbuendig mit fuehrenden Nullen\n\t\tL\tlinksbuendig\n\t\tN\tZeilennummer beginnt mit Null");
+    fprintf(stdout, "\n\n-v\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus");
+    fprintf(stdout, "\n\n-q\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus, ohne den\n\t\tInhalt der Datei auszugeben");
+    fprintf(stdout, "\n\n--version\tVersionsinformation des Programms wird ausgegeben\n");
 }
 
 void printVersion()
 {
-    printf("\ncvb Version 1.0");
+    fprintf(stdout, "cvb Version 1.0\n");
 }
