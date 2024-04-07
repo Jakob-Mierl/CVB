@@ -44,8 +44,8 @@ int main(int argc, char **argv)
         {"version", no_argument, 0, 'v'},
         {0, 0, 0, 0}
     };
-
-    while ((opt = getopt_long(argc, argv, "s:e:n:hv", long_options, NULL)) != -1) {
+  
+    while ((opt = getopt_long(argc, argv, "s:e:n:iq", long_options, NULL)) != -1) {
         switch (opt) {
             case 's':
                 startLine = atoi(optarg);
@@ -55,6 +55,12 @@ int main(int argc, char **argv)
                 break;
             case 'n':
                 line_format = optarg;
+                break;
+            case 'i':
+                printf("i");
+                break;
+            case 'q':
+                printf("q");
                 break;
             case 'h':
                 printHelpInfo();
@@ -68,6 +74,7 @@ int main(int argc, char **argv)
         }
     }
 
+    // The following lines handle the printing, they will likely have to be transfered to it's own function
     fp = fopen(argv[argc - 1], "r");
 
     if(fp == NULL)

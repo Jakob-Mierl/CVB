@@ -1,6 +1,6 @@
 # CVB
 
-A command line utility used for extracting and printing lines from a file.
+A Linux command line utility used for extracting and printing lines from a file.
 
 ## How To Use
 
@@ -21,7 +21,7 @@ Note: If no filename or a ``-`` is entered the input will be read from stdin.
   - ```O```: right bound with leading zeros
   - ```L```: left bound
   - ```N```: line number begins with zero
-- ```-v```: Displays status and file information while processing
+- ```-i```: Displays status and file information while processing
 - ```-q```: Displays status and file information without displaying the input
 - ```--version```: Displays the version number
 
