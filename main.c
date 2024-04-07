@@ -19,14 +19,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <string.h>
 
-// --help for informations
+
+
 void printHelpInfo();
-
-// --version
 void printVersion();
-
 int getFileLineCount(FILE *fp);
+void printFormat(char *format, int line_num, char *line, int lineZero);
+
+
 
 
 int main(int argc, char **argv) 
@@ -35,6 +37,7 @@ int main(int argc, char **argv)
     int startLine = 1, endLine = EOF, current_line = 1;
     int opt;
     char line[256];
+    char *line_format = "R";
 
     static struct option long_options[] = {
         {"help", no_argument, 0, 'h'},
@@ -42,13 +45,16 @@ int main(int argc, char **argv)
         {0, 0, 0, 0}
     };
 
-    while ((opt = getopt_long(argc, argv, "s:e:", long_options, NULL)) != -1) {
+    while ((opt = getopt_long(argc, argv, "s:e:n:hv", long_options, NULL)) != -1) {
         switch (opt) {
             case 's':
                 startLine = atoi(optarg);
                 break;
             case 'e':
                 endLine = atoi(optarg);
+                break;
+            case 'n':
+                line_format = optarg;
                 break;
             case 'h':
                 printHelpInfo();
@@ -79,7 +85,14 @@ int main(int argc, char **argv)
     {
         if (current_line >= startLine && current_line <= endLine) 
         {
-            fprintf(stdout, "%s", line);
+            if (line_format != NULL)
+            {
+                printFormat(line_format, current_line, line, startLine);
+            }
+            else
+            {
+                fprintf(stdout, "%s", line);
+            }
         }
         
         current_line++;
@@ -105,6 +118,38 @@ int getFileLineCount(FILE *fp)
     }
     rewind(fp);
     return lines;
+}
+
+void printFormat(char *format, int line_num, char *line, int lineZero)
+{
+    // temp array buffer to store format
+    char formatted_line[20];
+
+    if (strcmp(format, "R") == 0)
+    {
+        // snprintf formates and stores characters in the formatted_line array buffer
+        snprintf(formatted_line, sizeof(formatted_line), "%10d ", line_num);
+    }
+    else if (strcmp(format, "0") == 0)
+    {
+        snprintf(formatted_line, sizeof(formatted_line), "%010d ", line_num);
+    }
+    else if (strcmp(format, "L") == 0)
+    {
+        snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num);
+    }
+    else if (strcmp(format, "N") == 0)
+    {
+        snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num - lineZero);
+    }
+    else
+    {
+        fprintf(stderr, "\nInvalid format!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    // print format and line
+    fprintf(stdout, "%s%s", formatted_line, line);    
 }
 
 void printHelpInfo()
