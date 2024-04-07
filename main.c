@@ -22,13 +22,10 @@
 #include <string.h>
 
 
-
 void printHelpInfo();
 void printVersion();
 int getFileLineCount(FILE *fp);
 void printFormat(char *format, int line_num, char *line, int lineZero);
-
-
 
 
 int main(int argc, char **argv) 
@@ -37,7 +34,7 @@ int main(int argc, char **argv)
     int startLine = 1, endLine = EOF, current_line = 1;
     int opt;
     char line[256];
-    char *line_format = "R";
+    char *line_format = NULL;
 
     static struct option long_options[] = {
         {"help", no_argument, 0, 'h'},
@@ -127,26 +124,32 @@ int getFileLineCount(FILE *fp)
     return lines;
 }
 
+// format -> argument; line_num -> current line number; line -> line to be formatted; lineZero -> starting line to calculate the difference for format "N"
 void printFormat(char *format, int line_num, char *line, int lineZero)
 {
     // temp array buffer to store format
     char formatted_line[20];
 
+    // right-aligned
     if (strcmp(format, "R") == 0)
     {
         // snprintf formates and stores characters in the formatted_line array buffer
         snprintf(formatted_line, sizeof(formatted_line), "%10d ", line_num);
     }
+    // rigth-aligned with leading zeros
     else if (strcmp(format, "0") == 0)
     {
         snprintf(formatted_line, sizeof(formatted_line), "%010d ", line_num);
     }
+    // left-aligned
     else if (strcmp(format, "L") == 0)
     {
         snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num);
     }
+    // start numbering with zero
     else if (strcmp(format, "N") == 0)
     {
+        // line_num - lineZero to start line number at 0
         snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num - lineZero);
     }
     else
