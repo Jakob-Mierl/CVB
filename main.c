@@ -4,7 +4,7 @@
  * Author: Jakob Mierl and Andreas Mairhofer
  * Description:
  *   This program should implement the following bash command, via the c programming language.
- *   The command prints the lines between M>N from a certain .txt file, in this example it's fhs51232_a70charts.txt.
+ *   The command prints the lines between M>N from a certain .txt file, in this example it's a70charts.txt.
  *   head -n M a70charts.txt | tail +N
  *   - M --> Last line to be printed
  *   - N --> first line to be printed
@@ -15,6 +15,9 @@
  *   <stdio.h>      --> Used for printing to stdout and stderr
  *   <stdlib.h>     --> Used for exit() functions and certain flags
  *   <getopt.h>     --> Used for handling flags set in argv
+ *   <string.h>     --> Used for formatting the output
+ *   <sys/stat.h>   --> Used for printing the file information
+ *   <ctype.h>      --> Checks if the input from a flag is a digit
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,9 +29,9 @@
 
 void printHelpInfo();
 void printVersion();
-int getFileLineCount(FILE *fp);
 void printFormat(char *format, int line_num, char *line, int lineZero, int width);
 void printFileInformation(char *fn, FILE *fp);
+int getFileLineCount(FILE *fp);
 
 int main(int argc, char **argv) 
 {
