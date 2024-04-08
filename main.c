@@ -182,8 +182,7 @@ void printFormat(char *format, int line_num, char *line, int lineZero, int width
         exit(EXIT_FAILURE);
     }
 
-    // print format and line
-    //fprintf(stdout, "%s%s", formatted_line, line);  
+    // print format  
     fprintf(stdout, "%s", formatted_line);
 }
 
