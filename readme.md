@@ -15,7 +15,7 @@ Note: If no filename or a ``-`` is entered the input will be read from stdin.
 - ```--help```: Displays help menu
 - ```-s n```: Prints input from specified line (default: first line)
 - ```-e n```: Prints input until specified line (default: last line)
-- ```-n [FORMAT]```: Prints with leading zeros
+- ```-n [FORMAT]```: Prints with leading line numbers
   - ```R```: right bound (default)
   - ```0```: right bound with leading zeros
   - ```L```: left bound

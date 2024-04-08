@@ -24,14 +24,11 @@
 #include <sys/types.h>
 #include <ctype.h>
 
-
 void printHelpInfo();
 void printVersion();
 int getFileLineCount(FILE *fp);
 void printFormat(char *format, int line_num, char *line, int lineZero, int width);
 void printFileInformation(char *fn, FILE *fp);
-
-
 
 int main(int argc, char **argv) 
 {
@@ -41,7 +38,7 @@ int main(int argc, char **argv)
     int opt;
     int width = 3;  // if no width input, width 3 is set as default
     char line[256];
-    char *line_format = "R";
+    char *line_format = NULL;
 
     static struct option long_options[] = {
         {"help", no_argument, 0, 'h'},
@@ -154,7 +151,6 @@ void printFormat(char *format, int line_num, char *line, int lineZero, int width
     char formatted_line[256];
 
     //formating formatOption = {3, true, false, false, false};
-
     // right-aligned
     if (strcmp(format, "R") == 0)
     {
