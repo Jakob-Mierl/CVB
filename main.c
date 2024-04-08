@@ -20,6 +20,8 @@
 #include <stdlib.h>
 #include <getopt.h>
 #include <string.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 
 
@@ -27,7 +29,7 @@ void printHelpInfo();
 void printVersion();
 int getFileLineCount(FILE *fp);
 void printFormat(char *format, int line_num, char *line, int lineZero);
-
+void printFileInformation(char *fn, FILE *fp);
 
 
 
@@ -35,6 +37,7 @@ int main(int argc, char **argv)
 {
     FILE *fp;
     int startLine = 1, endLine = EOF, current_line = 1;
+    int printFileInformation_flag = 0;
     int opt;
     char line[256];
     char *line_format = "R";
@@ -57,10 +60,10 @@ int main(int argc, char **argv)
                 line_format = optarg;
                 break;
             case 'i':
-                printf("i");
+                printFileInformation_flag = 1;
                 break;
             case 'q':
-                printf("q");
+                printFileInformation_flag = 2;
                 break;
             case 'h':
                 printHelpInfo();
@@ -74,18 +77,27 @@ int main(int argc, char **argv)
         }
     }
 
-    // The following lines handle the printing, they will likely have to be transfered to it's own function
     fp = fopen(argv[argc - 1], "r");
 
     if(fp == NULL)
     {
         fprintf(stderr, "No filename specified! Reading from command line\n");
-        exit(EXIT_FAILURE);
+        fp = stdin;
     }
 
     if(endLine == EOF)
     {
         endLine = getFileLineCount(fp);
+    }
+
+    if(printFileInformation_flag == 1 && fp != stdin)
+    {
+        printFileInformation(argv[argc - 1], fp);
+    }
+    else if(printFileInformation_flag == 2 && fp != stdin)
+    {
+        printFileInformation(argv[argc - 1], fp);
+        return(0);
     }
 
     while (fgets(line, sizeof(line), fp) != NULL) 
@@ -165,7 +177,7 @@ void printHelpInfo()
     fprintf(stdout, "\n-s n\t\tAngabe der ersten auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird ab erster Zeile gelesen");
     fprintf(stdout, "\n\n-e n\t\tAngabe der letzte auszugebenen (n-te) Zeile\n\t\twenn keine Angabe, dann wird bis zur letzten Zeile gelesen");
     fprintf(stdout, "\n\n-n[format]\tAusgabe mit fuehrenden Zeilennummern\n\t\tuint\tBreite des Zeilennummernfelds\n\t\tR\trechtsbuendig\n\t\t0\trechtsbuendig mit fuehrenden Nullen\n\t\tL\tlinksbuendig\n\t\tN\tZeilennummer beginnt mit Null");
-    fprintf(stdout, "\n\n-v\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus");
+    fprintf(stdout, "\n\n-i\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus");
     fprintf(stdout, "\n\n-q\t\tProgramm gibt waehrend Prozessierung zustaetzliche Status- und Dateininformationen aus, ohne den\n\t\tInhalt der Datei auszugeben");
     fprintf(stdout, "\n\n--version\tVersionsinformation des Programms wird ausgegeben\n");
 }
@@ -173,4 +185,28 @@ void printHelpInfo()
 void printVersion()
 {
     fprintf(stdout, "cvb Version 1.0\n");
+}
+
+void printFileInformation(char *fn, FILE *fp)
+{
+    struct stat fileStat;
+        
+    printf("File name: \t\t%s\n", fn);
+    if(stat(fn, &fileStat) < 0)    
+        exit(EXIT_FAILURE);
+            
+    printf("File Size: \t\t%d bytes\n", fileStat.st_size);
+    printf("Line count: \t\t%d\n", getFileLineCount(fp));
+    printf("File Permissions: \t");
+    printf( (S_ISDIR(fileStat.st_mode)) ? "d" : "-");
+    printf( (fileStat.st_mode & S_IRUSR) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWUSR) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXUSR) ? "x" : "-");
+    printf( (fileStat.st_mode & S_IRGRP) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWGRP) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXGRP) ? "x" : "-");
+    printf( (fileStat.st_mode & S_IROTH) ? "r" : "-");
+    printf( (fileStat.st_mode & S_IWOTH) ? "w" : "-");
+    printf( (fileStat.st_mode & S_IXOTH) ? "x" : "-");
+    printf("\n\n");
 }

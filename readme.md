@@ -1,11 +1,11 @@
 # CVB
 
-A Linux command line utility used for extracting and printing lines from a file.
+A command line utility used for extracting and printing lines from a file.
 
 ## How To Use
 
 ```shell
-$ ./CVB.out [FLAGS]... [Filename]
+$ ./CVB.out [FLAGS] [Filename]
 ```
 
 Note: If no filename or a ``-`` is entered the input will be read from stdin.
@@ -16,9 +16,8 @@ Note: If no filename or a ``-`` is entered the input will be read from stdin.
 - ```-s n```: Prints input from specified line (default: first line)
 - ```-e n```: Prints input until specified line (default: last line)
 - ```-n [FORMAT]```: Prints with leading zeros
-  - ```n```: Width of line number field
   - ```R```: right bound (default)
-  - ```O```: right bound with leading zeros
+  - ```0```: right bound with leading zeros
   - ```L```: left bound
   - ```N```: line number begins with zero
 - ```-i```: Displays status and file information while processing
