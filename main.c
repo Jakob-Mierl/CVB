@@ -151,7 +151,7 @@ int getFileLineCount(FILE *fp)
 void printFormat(char *format, int line_num, char *line, int lineZero, int width)
 {
     // temp array buffer to store format
-    char formatted_line[100];
+    char formatted_line[256];
 
     //formating formatOption = {3, true, false, false, false};
 
