@@ -22,13 +22,13 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
+#include <ctype.h>
 
 
 void printHelpInfo();
 void printVersion();
 int getFileLineCount(FILE *fp);
-void printFormat(char *format, int line_num, char *line, int lineZero);
+void printFormat(char *format, int line_num, char *line, int lineZero, int width);
 void printFileInformation(char *fn, FILE *fp);
 
 
@@ -39,6 +39,7 @@ int main(int argc, char **argv)
     int startLine = 1, endLine = EOF, current_line = 1;
     int printFileInformation_flag = 0;
     int opt;
+    int width = 3;  // if no width input, width 3 is set as default
     char line[256];
     char *line_format = "R";
 
@@ -51,13 +52,20 @@ int main(int argc, char **argv)
     while ((opt = getopt_long(argc, argv, "s:e:n:iq", long_options, NULL)) != -1) {
         switch (opt) {
             case 's':
-                startLine = atoi(optarg);
+                startLine = atoi(optarg);   // atoi converts ascii to integer
                 break;
             case 'e':
                 endLine = atoi(optarg);
                 break;
             case 'n':
                 line_format = optarg;
+
+                // check if followed input after format is digit for width
+                if (isdigit(*argv[optind]))
+                {
+                    width = atoi(argv[optind]);
+                    optind++;
+                }
                 break;
             case 'i':
                 printFileInformation_flag = 1;
@@ -106,7 +114,7 @@ int main(int argc, char **argv)
         {
             if (line_format != NULL)
             {
-                printFormat(line_format, current_line, line, startLine);
+                printFormat(line_format, current_line, line, startLine, width);
             }
             else
             {
@@ -139,27 +147,35 @@ int getFileLineCount(FILE *fp)
     return lines;
 }
 
-void printFormat(char *format, int line_num, char *line, int lineZero)
+// format -> argument; line_num -> current line number; line -> line to be formatted; lineZero -> starting line to calculate the difference for format "N"
+void printFormat(char *format, int line_num, char *line, int lineZero, int width)
 {
     // temp array buffer to store format
-    char formatted_line[20];
+    char formatted_line[100];
 
+    //formating formatOption = {3, true, false, false, false};
+
+    // right-aligned
     if (strcmp(format, "R") == 0)
     {
         // snprintf formates and stores characters in the formatted_line array buffer
-        snprintf(formatted_line, sizeof(formatted_line), "%10d ", line_num);
+        snprintf(formatted_line, sizeof(formatted_line), "%*d %s", width, line_num, line);
     }
+    // right-aligned with leading zeros
     else if (strcmp(format, "0") == 0)
     {
-        snprintf(formatted_line, sizeof(formatted_line), "%010d ", line_num);
+        snprintf(formatted_line, sizeof(formatted_line), "%0*d %s", width, line_num, line);
     }
+    // left-aligned
     else if (strcmp(format, "L") == 0)
     {
-        snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num);
+        snprintf(formatted_line, sizeof(formatted_line), "%-d %s", line_num, line);
     }
+    //start numbering with zero
     else if (strcmp(format, "N") == 0)
     {
-        snprintf(formatted_line, sizeof(formatted_line), "%d ", line_num - lineZero);
+        // line_num - lineZero to start line number at 0
+        snprintf(formatted_line, sizeof(formatted_line), "%d %s", line_num - lineZero, line);
     }
     else
     {
@@ -168,7 +184,8 @@ void printFormat(char *format, int line_num, char *line, int lineZero)
     }
 
     // print format and line
-    fprintf(stdout, "%s%s", formatted_line, line);    
+    //fprintf(stdout, "%s%s", formatted_line, line);  
+    fprintf(stdout, "%s", formatted_line);
 }
 
 void printHelpInfo()
